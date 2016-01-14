@@ -43,9 +43,16 @@ def make_chains(text_string):
 def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
+    from string import uppercase
+
+    uppercase_list = []
+
+    for letter in uppercase:
+        uppercase_list.append(letter)
+
     while True:
         key = choice(chains.keys())
-        if key[0] == key[0].title():
+        if key[0][0] in uppercase_list:
             break
 
     words = [key[0], key[1]]
@@ -81,8 +88,21 @@ def tweet(chains):
     print most_recent_status[0]
     # print type(most_recent_status)
 
-    status = api.PostUpdate(make_text(chains)[:140])
-    print status.text
+    status = make_text(chains)[:140]
+
+    # Modify our status to end on punctuation
+    punctuation = [".", "!", "?", "--", "'", "\""]
+
+    # from pdb import set_trace
+    # set_trace()
+
+    for i in range(len(status) - 1):
+        if status[len(status) - 1 - i] in punctuation:
+            status = status[:len(status) - i]
+            break
+
+    update = api.PostUpdate(status)
+    print update.text
 
     return
 
@@ -91,8 +111,8 @@ def tweet(chains):
 filenames = sys.argv[1:]
 
 # Open the files and turn them into one long string
-text = open_and_read_file(filenames)
-
+text = open_and_read_file(filenames
+)
 # Get a Markov chain
 chains = make_chains(text)
 
